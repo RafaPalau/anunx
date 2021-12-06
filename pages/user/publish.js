@@ -50,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
     width: 200,
     height: 150,
     backgroundSize: "cover",
-    margin: '0 15px 15px 0',
+    margin: "0 15px 15px 0",
     backgroundPosition: "center center",
 
     "& $mainImage": {
@@ -88,15 +88,18 @@ const Publish = () => {
     onDrop: (acceptedFile) => {
       const newFiles = acceptedFile.map((file) => {
         return Object.assign(file, {
-          preview: URL.createObjectURL(file)
+          preview: URL.createObjectURL(file),
         });
       });
-      setFiles([
-        ...files,
-        ...newFiles
-      ]);
+      setFiles([...files, ...newFiles]);
     },
   });
+
+  const handleRemoveFile = (fileName) => {
+    const newFileState = files.filter((file) => file.name !== fileName);
+    setFiles(newFileState);
+  };
+
   return (
     <TemplateDefault>
       <Container maxWidth='sm' className={classes.container}>
@@ -187,7 +190,10 @@ const Publish = () => {
                 ) : null}
 
                 <Box className={classes.mask}>
-                  <IconButton color='secondary'>
+                  <IconButton
+                    color='secondary'
+                    onClick={() => handleRemoveFile(file.name)}
+                  >
                     <DeleteForever fontSize='large' />
                   </IconButton>
                 </Box>
