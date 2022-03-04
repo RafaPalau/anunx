@@ -21,23 +21,23 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Home() {
+const Home = () => {
   const classes = useStyles();
   return (
     <TemplateDefault>
-      <Container maxWidth='sm'>
-        <Typography variant='h2' component='h1' align='center'>
+      <Container maxWidth="sm">
+        <Typography variant="h2" component="h1" align="center">
           Meus Anúncios
         </Typography>
         <Button
-          variant='contained'
-          color='primary'
+          variant="contained"
+          color="primary"
           className={classes.buttonAdd}
         >
           Publicar Novo Anúncio
         </Button>
       </Container>
-      <Container maxWidth='md'>
+      <Container maxWidth="md">
         <Grid container spacing={4}>
           <Grid item xs={12} sm={6} md={4}>
             <Card
@@ -45,16 +45,16 @@ export default function Home() {
               title="iPhone 12 com garatia"
               subtitle="R$ 1.000,00"
               actions={
-               <>
-                <CardActions>
-                  <Button size='small' color='primary'>
-                    Editar
-                  </Button>
-                  <Button size='small' color='primary'>
-                    Editar
-                  </Button>
-                </CardActions>
-               </>
+                <>
+                  <CardActions>
+                    <Button size="small" color="primary">
+                      Editar
+                    </Button>
+                    <Button size="small" color="primary">
+                      Editar
+                    </Button>
+                  </CardActions>
+                </>
               }
             />
           </Grid>
@@ -62,4 +62,6 @@ export default function Home() {
       </Container>
     </TemplateDefault>
   );
-}
+};
+Home.requireAuth = true;
+export default Home;

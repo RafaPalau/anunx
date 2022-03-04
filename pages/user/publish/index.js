@@ -265,4 +265,5 @@ const Publish = () => {
     </TemplateDefault>
   );
 };
+Publish.requireAuth = true;
 export default Publish;
