@@ -32,7 +32,7 @@ const Publish = () => {
       text: "Anúncio cadastrado com sucesso!",
       severity: "success",
     });
-    // router.push("/user/dashboard");
+    router.push("/user/dashboard");
   };
   const handleError = () => {
     setToasty({
