@@ -1,4 +1,6 @@
 import { Formik } from "formik";
+import { useRouter } from "next/router";
+import axios from "axios";
 import {
   Container,
   Typography,
@@ -13,23 +15,66 @@ import {
   Input,
 } from "@material-ui/core";
 
-import TemplateDefault from "../../../src/templates/Default";
 import { initialValues, validationSchema } from "./formValues";
-
+import TemplateDefault from "../../../src/templates/Default";
+import useToasty from "../../../src/contexts/Toasty";
 import useStyles from "./styles";
 import FileUpload from "../../../src/components/FileUpload";
+import { getSession } from "next-auth/client";
 
-const Publish = () => {
+const Publish = ({ userId, image }) => {
   const classes = useStyles();
+  const { setToasty } = useToasty();
+  const router = useRouter();
+
+  const formValues = {
+    ...initialValues,
+  };
+
+  formValues.userId = userId;
+  formValues.image = image;
+
+  const handleSuccess = () => {
+    setToasty({
+      open: true,
+      text: "Anúncio cadastrado com sucesso!",
+      severity: "success",
+    });
+    router.push("/user/dashboard");
+  };
+  const handleError = () => {
+    setToasty({
+      open: true,
+      text: "Ops, ocorreu um erro, tente novamente.",
+      severity: "error",
+    });
+  };
+
+  const handlSubmit = async (values) => {
+    const formData = new FormData();
+
+    for (let field in values) {
+      if (field === "files") {
+        values.files.forEach((file) => {
+          formData.append("files", file);
+        });
+      } else {
+        formData.append(field, values[field]);
+      }
+    }
+
+    axios
+      .post("/api/products", formData)
+      .then(handleSuccess)
+      .catch(handleError);
+  };
 
   return (
     <TemplateDefault>
       <Formik
-        initialValues={initialValues}
+        initialValues={formValues}
         validationSchema={validationSchema}
-        onSubmit={() => {
-          console.log("submit", values);
-        }}
+        onSubmit={handlSubmit}
       >
         {({
           touched,
@@ -41,6 +86,9 @@ const Publish = () => {
         }) => {
           return (
             <form onSubmit={handleSubmit}>
+              <Input type="hidden" name="userId" value={values.userId} />
+              <Input type="hidden" name="image" value={values.image} />
+
               <Container maxWidth="sm">
                 <Typography
                   component="h1"
@@ -265,4 +313,18 @@ const Publish = () => {
     </TemplateDefault>
   );
 };
+
+Publish.requireAuth = true;
+
+export async function getServerSideProps({ req }) {
+  const { user, userId } = await getSession({ req });
+
+  return {
+    props: {
+      userId: userId,
+      image: user.image,
+    },
+  };
+}
+
 export default Publish;

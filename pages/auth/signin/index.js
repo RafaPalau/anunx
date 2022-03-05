@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { Formik } from "formik";
 import axios from "axios";
 import { useRouter } from "next/router";
@@ -21,19 +22,23 @@ import useToasty from "../../../src/contexts/Toasty";
 import useStyles from "./styles";
 import { Alert } from "@material-ui/lab";
 
-const Signin = () => {
+const Signin = ({ APP_URL }) => {
   const classes = useStyles();
   const router = useRouter();
   const { setToasty } = useToasty();
   const [session] = useSession();
 
-  console.log(session);
+  const handleGoogleLogin = () => {
+    signIn("google", {
+      callbackUrl: `${APP_URL}/user/dashboard`,
+    });
+  };
 
   const handleFormSubmit = (values) => {
     signIn("credentials", {
       email: values.email,
       password: values.password,
-      callbackUrl: "http://localhost:3000/user/dashboard",
+      callbackUrl: `${APP_URL}/user/dashboard`,
     });
   };
 
@@ -52,6 +57,28 @@ const Signin = () => {
 
       <Container>
         <Box className={classes.box}>
+          <Box display="flex" justifyContent="center">
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={
+                <Image
+                  src="/images/logo_google.png"
+                  width={20}
+                  height={20}
+                  alt="Login com Google"
+                />
+              }
+              onClick={handleGoogleLogin}
+            >
+              Entrar com Google
+            </Button>
+          </Box>
+
+          <Box className={classes.orSeparator}>
+            <span>ou</span>
+          </Box>
+
           <Formik
             initialValues={initialValues}
             validationSchema={validationSchema}
@@ -130,6 +157,12 @@ const Signin = () => {
       </Container>
     </TemplateDefault>
   );
+};
+
+Signin.getServerSideProps = async function () {
+  return {
+    APP_URL: process.env.APP_URL,
+  };
 };
 
 export default Signin;
