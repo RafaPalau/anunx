@@ -20,11 +20,19 @@ import TemplateDefault from "../../../src/templates/Default";
 import useToasty from "../../../src/contexts/Toasty";
 import useStyles from "./styles";
 import FileUpload from "../../../src/components/FileUpload";
+import { getSession } from "next-auth/client";
 
-const Publish = () => {
+const Publish = ({ userId, image }) => {
   const classes = useStyles();
   const { setToasty } = useToasty();
   const router = useRouter();
+
+  const formValues = {
+    ...initialValues,
+  };
+
+  formValues.userId = userId;
+  formValues.image = image;
 
   const handleSuccess = () => {
     setToasty({
@@ -42,7 +50,7 @@ const Publish = () => {
     });
   };
 
-  const handleFormSubmit = (values) => {
+  const handlSubmit = async (values) => {
     const formData = new FormData();
 
     for (let field in values) {
@@ -64,9 +72,9 @@ const Publish = () => {
   return (
     <TemplateDefault>
       <Formik
-        initialValues={initialValues}
+        initialValues={formValues}
         validationSchema={validationSchema}
-        onSubmit={handleFormSubmit}
+        onSubmit={handlSubmit}
       >
         {({
           touched,
@@ -78,6 +86,9 @@ const Publish = () => {
         }) => {
           return (
             <form onSubmit={handleSubmit}>
+              <Input type="hidden" name="userId" value={values.userId} />
+              <Input type="hidden" name="image" value={values.image} />
+
               <Container maxWidth="sm">
                 <Typography
                   component="h1"
@@ -304,4 +315,16 @@ const Publish = () => {
 };
 
 Publish.requireAuth = true;
+
+export async function getServerSideProps({ req }) {
+  const { user, userId } = await getSession({ req });
+
+  return {
+    props: {
+      userId: userId,
+      image: user.image,
+    },
+  };
+}
+
 export default Publish;

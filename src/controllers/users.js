@@ -9,7 +9,7 @@ const get = async (req, res) => {
 };
 
 const post = async (req, res) => {
-  const { name, email, password } = req.body;
+  const { id, image, name, email, password } = req.body;
 
   await dbConnect();
 
@@ -19,6 +19,8 @@ const post = async (req, res) => {
     name,
     email,
     password: passwordCrypto,
+    id,
+    image,
   });
 
   user.save();

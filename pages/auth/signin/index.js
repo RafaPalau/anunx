@@ -28,8 +28,6 @@ const Signin = ({ APP_URL }) => {
   const { setToasty } = useToasty();
   const [session] = useSession();
 
-  console.log(session);
-
   const handleGoogleLogin = () => {
     signIn("google", {
       callbackUrl: `${APP_URL}/user/dashboard`,
