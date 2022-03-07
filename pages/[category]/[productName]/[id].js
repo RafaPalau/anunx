@@ -9,9 +9,14 @@ import {
   Grid,
   Typography,
 } from "@material-ui/core";
-import TemplateDefault from "../../src/templates/Default";
+
 import { makeStyles } from "@material-ui/core/styles";
 import Carousel from "react-material-ui-carousel";
+
+import TemplateDefault from "../../../src/templates/Default";
+import ProductsModel from "../../../src/models/products";
+import dbConnect from "../../../src/utils/dbConnect";
+import { formatCurrency } from "../../../src/utils/currency";
 
 const useStyles = makeStyles((theme) => ({
   box: {
@@ -25,102 +30,82 @@ const useStyles = makeStyles((theme) => ({
   price: {
     fontWeight: "bold",
     marginBottom: 15,
-    display: "block",
   },
   card: {
     height: "100%",
   },
   cardMedia: {
-    paddingTop: "56.25%",
+    paddingTop: "56%",
   },
 }));
 
-const Product = () => {
+const Product = ({ product }) => {
   const classes = useStyles();
+
   return (
     <TemplateDefault>
-      <Container>
+      <Container maxWidth="lg">
         <Grid container spacing={3}>
           <Grid item xs={8}>
             <Box className={classes.box}>
               <Carousel
                 autoPlay={false}
-                navButtonsAlwaysVisible
+                animation="slide"
+                navButtonsAlwaysVisible={true}
                 navButtonsProps={{
                   style: {
                     color: "white",
-                    animation: "slide",
                   },
                 }}
               >
-                <Card className={classes.card}>
-                  <CardMedia
-                    className={classes.cardMedia}
-                    image="https://source.unsplash.com/random/800x602"
-                    title="Titulo da imagem"
-                  />
-                </Card>
-                <Card className={classes.card}>
-                  <CardMedia
-                    className={classes.cardMedia}
-                    image="https://source.unsplash.com/random/800x600"
-                    title="Titulo da imagem"
-                  />
-                </Card>
-                <Card className={classes.card}>
-                  <CardMedia
-                    className={classes.cardMedia}
-                    image="https://source.unsplash.com/random/800x601"
-                    title="Titulo da imagem"
-                  />
-                </Card>
+                {product.files.map((file) => (
+                  <Card key={file.name} className={classes.card}>
+                    <CardMedia
+                      className={classes.cardMedia}
+                      image={`/uploads/${file.name}`}
+                      title={product.title}
+                    />
+                  </Card>
+                ))}
               </Carousel>
             </Box>
-
             <Box className={classes.box} textAlign="left">
               <Typography component="span" variant="caption">
-                Publicado 16 junho de 2021
+                Publicado 16 de Junho de 2021
               </Typography>
               <Typography
                 component="h4"
                 variant="h4"
                 className={classes.productName}
               >
-                Jaguar XE 2.0 D R-Sport Aut
+                {product.title}
               </Typography>
-              <Typography
-                component="span"
-                variant="h4"
-                className={classes.price}
-              >
-                R$ 50.000,00
+              <Typography component="h4" variant="h4" className={classes.price}>
+                {formatCurrency(product.price)}
               </Typography>
-              <Chip label="Categoria" />
+              <Chip label={product.category} />
             </Box>
-
             <Box className={classes.box} textAlign="left">
               <Typography component="h6" variant="h6">
                 Descrição
               </Typography>
               <Typography component="p" variant="body2">
-                Lorem ipsum dolor sit amet consectetur, adipisicing elit.
-                Cupiditate natus deleniti libero dolorem omnis reprehenderit
-                repudiandae aperiam repellendus nihil voluptatem?
+                {product.description}
               </Typography>
             </Box>
           </Grid>
-
           <Grid item xs={4}>
             <Card elevation={0} className={classes.box}>
               <CardHeader
-                avatar={<Avatar>R</Avatar>}
-                title="Rafael Palau"
-                subheader="rafaeldonizetip@gmail.com"
+                avatar={
+                  <Avatar src={product.user.image}>
+                    {product.user.image || product.user.name[0]}
+                  </Avatar>
+                }
+                title={product.user.name}
+                subheader={product.user.email}
               />
-              <CardMedia
-                image="https://source.unsplash.com/random/400x300"
-                title="Rafael Palau"
-              />
+              <CardMedia image={product.user.image} title={product.user.name} />
             </Card>
             <Box className={classes.box}>
               <Typography component="h6" variant="h6">
@@ -133,5 +118,19 @@ const Product = () => {
     </TemplateDefault>
   );
 };
+
+export async function getServerSideProps({ query }) {
+  const { id } = query;
+
+  await dbConnect();
+
+  const product = await ProductsModel.findOne({ _id: id });
+
+  return {
+    props: {
+      product: JSON.parse(JSON.stringify(product)),
+    },
+  };
+}
 
 export default Product;
