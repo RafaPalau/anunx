@@ -7,7 +7,8 @@ import {
 } from "@material-ui/core";
 
 import { makeStyles } from "@material-ui/core";
-import { getSession } from "next-auth/client";
+import { useSession, getSession } from "next-auth/client";
+// import Link from "next/link";
 import dbConnect from "../../src/utils/dbConnect";
 
 import ProductsModel from "../../src/models/products";
@@ -22,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Home = ({ products }) => {
-  console.log(products);
+  const [session] = useSession();
 
   const classes = useStyles();
   return (
@@ -31,6 +32,8 @@ const Home = ({ products }) => {
         <Typography variant="h2" component="h1" align="center">
           Meus Anúncios
         </Typography>
+
+        {/* <Link href={session ? "/user/publish" : "/auth/signin"} passHref> */}
         <Button
           variant="contained"
           color="primary"
@@ -38,6 +41,7 @@ const Home = ({ products }) => {
         >
           Publicar Novo Anúncio
         </Button>
+        {/* </Link> */}
       </Container>
       <Container maxWidth="md">
         <Grid container spacing={4}>
