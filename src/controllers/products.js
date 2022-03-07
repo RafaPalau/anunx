@@ -30,10 +30,10 @@ const post = async (req, res) => {
       const extension = path.extname(file.name);
       const filename = `${timestamp}_${random}${extension}`;
 
-      const oldpath = path.join(__dirname, `../../../../${file.path}`);
+      const oldpath = path.join(__dirname, `../../../../../${file.path}`);
       const newpath = path.join(
         __dirname,
-        `../../../../${form.uploadDir}/${filename}`
+        `../../../../../${form.uploadDir}/${filename}`
       );
 
       filesToSave.push({
