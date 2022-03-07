@@ -15,12 +15,29 @@ import {
   Input,
 } from "@material-ui/core";
 
-import { initialValues, validationSchema } from "./formValues";
+import {
+  initialValues,
+  validationSchema,
+} from "../../../src/utils/formValuesPublish";
 import TemplateDefault from "../../../src/templates/Default";
 import useToasty from "../../../src/contexts/Toasty";
-import useStyles from "./styles";
+import { makeStyles } from "@material-ui/core";
 import FileUpload from "../../../src/components/FileUpload";
 import { getSession } from "next-auth/client";
+
+const useStyles = makeStyles((theme) => ({
+  boxContainer: {
+    paddingBottom: theme.spacing(3),
+  },
+  box: {
+    backgroundColor: theme.palette.background.white,
+    padding: theme.spacing(3),
+  },
+  inputLabel: {
+    fontWeight: 400,
+    color: theme.palette.primary.main,
+  },
+}));
 
 const Publish = ({ userId, image }) => {
   const classes = useStyles();

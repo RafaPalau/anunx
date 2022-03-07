@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
     marginTop: 50,
   },
   productLink: {
-    textDecoration: "none",
+    textDecoration: "none !important",
   },
 }));
 

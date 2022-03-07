@@ -3,6 +3,7 @@ import { Formik } from "formik";
 import axios from "axios";
 import { useRouter } from "next/router";
 import { signIn, useSession } from "next-auth/client";
+import { makeStyles } from "@material-ui/core";
 
 import {
   Box,
@@ -17,10 +18,50 @@ import {
 } from "@material-ui/core";
 
 import TemplateDefault from "../../../src/templates/Default";
-import { initialValues, validationSchema } from "./formValues";
+import {
+  initialValues,
+  validationSchema,
+} from "../../../src/utils/formValuesSignin";
 import useToasty from "../../../src/contexts/Toasty";
-import useStyles from "./styles";
+
 import { Alert } from "@material-ui/lab";
+
+const useStyles = makeStyles(() => ({
+  container: {
+    padding: 30,
+  },
+  box: {
+    backgroundColor: theme.palette.background.white,
+    padding: theme.spacing(3),
+  },
+  formControl: {
+    marginBottom: theme.spacing(1),
+  },
+  submit: {
+    margin: theme.spacing(3, 0, 2),
+  },
+  loading: {
+    display: "block",
+    margin: "10px auto",
+  },
+  errorMessage: {
+    margin: "20px 0",
+  },
+  orSeparator: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#e8e8e8",
+    width: "100%",
+    height: 1,
+    margin: theme.spacing(7, 0, 4),
+
+    "& span": {
+      backgroundColor: "white",
+      padding: "0 30px",
+    },
+  },
+}));
 
 const Signin = ({ APP_URL }) => {
   const classes = useStyles();
@@ -159,7 +200,7 @@ const Signin = ({ APP_URL }) => {
   );
 };
 
-Signin.getServerSideProps = async function () {
+Signin.getInitialProps = async function () {
   return {
     APP_URL: process.env.APP_URL,
   };
