@@ -64,7 +64,7 @@ const Publish = ({ userId, image }) => {
     }
 
     axios
-      .post("/api/products", formData)
+      .post("/api/products/add", formData)
       .then(handleSuccess)
       .catch(handleError);
   };
@@ -142,7 +142,7 @@ const Publish = ({ userId, image }) => {
                     </InputLabel>
                     <Select
                       name="category"
-                      value={values.category && touched.category}
+                      value={values.category}
                       fullWidth
                       onChange={handleChange}
                     >
