@@ -1,3 +1,8 @@
+import { useState } from "react";
+import Link from "next/link";
+import slugify from "slugify";
+import { useRouter } from "next/router";
+
 import {
   Paper,
   Container,
@@ -7,77 +12,102 @@ import {
   Grid,
 } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
-import Templatedefault from "../src/templates/Default";
+import TemplateDefault from "../src/templates/Default";
+
 import { makeStyles } from "@material-ui/core/styles";
 import Card from "../src/components/Card";
+import dbConnect from "../src/utils/dbConnect";
+import ProductsModel from "../src/models/products";
+import { formatCurrency } from "../src/utils/currency";
 
 const useStyles = makeStyles((theme) => ({
   searchBox: {
     display: "flex",
     justifyContent: "center",
     padding: theme.spacing(0, 2),
-    marginTo: 20,
+    marginTop: 20,
   },
-  cardgrid: {
+  cardGrid: {
     marginTop: 50,
+  },
+  productLink: {
+    textDecoration: "none",
   },
 }));
 
-const Home = () => {
+const Home = ({ products }) => {
+  const router = useRouter();
+  const [search, setSearch] = useState();
   const classes = useStyles();
 
+  const handleSubmitSearch = () => {
+    router.push({
+      pathname: `/search/${search}`,
+    });
+  };
+
   return (
-    <Templatedefault>
+    <TemplateDefault>
       <Container maxWidth="md">
         <Typography component="h1" variant="h3" align="center" color="primary">
           O que deseja encontrar?
         </Typography>
         <Paper className={classes.searchBox}>
-          <InputBase placeholder="Ex.: iPhone 12 com garatia" fullWidth />
-          <IconButton>
+          <InputBase
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Ex.: iPhone 12 com garantia"
+            fullWidth
+          />
+          <IconButton onClick={handleSubmitSearch}>
             <SearchIcon />
           </IconButton>
         </Paper>
       </Container>
 
-      <Container maxWidth="lg" className={classes.cardgrid}>
-        <Typography
-          component="h2"
-          variant="h4"
-          align="center"
-          color="textPrimary"
-        >
+      <Container maxWidth="lg" className={classes.cardGrid}>
+        <Typography component="h2" variant="h4" align="center" color="primary">
           Destaques
         </Typography>
         <br />
-        <Container maxWidth="lg" className={classes.cardgrid}>
-          <Grid container spacing={4}>
-            <Grid item xs={12} sm={6} md={4}>
-              <Card
-                image="https://source.unsplash.com/random"
-                title="iPhone 12 com garatia"
-                subtitle="R$ 1.000,00"
-              />
-            </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-              <Card
-                image="https://source.unsplash.com/random"
-                title="iPhone 12 com garatia"
-                subtitle="R$ 1.000,00"
-              />
-            </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-              <Card
-                image="https://source.unsplash.com/random"
-                title="iPhone 12 com garatia"
-                subtitle="R$ 1.000,00"
-              />
-            </Grid>
-          </Grid>
-        </Container>
+        <Grid container spacing={4}>
+          {products.map((product) => {
+            const category = slugify(product.category).toLocaleLowerCase();
+            const title = slugify(product.title).toLocaleLowerCase();
+
+            return (
+              <Grid key={product._id} item xs={12} sm={6} md={4}>
+                <Link href={`/${category}/${title}/${product._id}`}>
+                  <a className={classes.productLink}>
+                    <Card
+                      image={`/uploads/${product.files[0].name}`}
+                      title={product.title}
+                      subtitle={formatCurrency(product.price)}
+                    />
+                  </a>
+                </Link>
+              </Grid>
+            );
+          })}
+        </Grid>
       </Container>
-    </Templatedefault>
+    </TemplateDefault>
   );
 };
+
+export async function getServerSideProps() {
+  await dbConnect();
+
+  const products = await ProductsModel.aggregate([
+    {
+      $sample: { size: 6 },
+    },
+  ]);
+
+  return {
+    props: {
+      products: JSON.parse(JSON.stringify(products)),
+    },
+  };
+}
 
 export default Home;
