@@ -12,13 +12,13 @@ import {
   Grid,
 } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
-import TemplateDefault from "../src/templates/Default";
+import TemplateDefault from "../templates/Default";
 
 import { makeStyles } from "@material-ui/core/styles";
-import Card from "../src/components/Card";
-import dbConnect from "../src/utils/dbConnect";
-import ProductsModel from "../src/models/products";
-import { formatCurrency } from "../src/utils/currency";
+import Card from "../components/Card";
+import dbConnect from "../utils/dbConnect";
+import ProductsModel from "../models/products";
+import { formatCurrency } from "../utils/currency";
 
 const useStyles = makeStyles((theme) => ({
   searchBox: {

@@ -15,12 +15,12 @@ import {
   CircularProgress,
 } from "@material-ui/core";
 
-import TemplateDefault from "../../../src/templates/Default";
+import TemplateDefault from '../../../templates/Default'
 import {
   initialValues,
   validationSchema,
-} from "../../../src/utils/formValuesSignup";
-import useToasty from "../../../src/contexts/Toasty";
+} from "../../../utils/formValuesSignup";
+import useToasty from "../../../contexts/Toasty";
 
 const useStyles = makeStyles((theme) => ({
   container: {

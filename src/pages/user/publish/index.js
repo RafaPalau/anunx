@@ -18,11 +18,11 @@ import {
 import {
   initialValues,
   validationSchema,
-} from "../../../src/utils/formValuesPublish";
-import TemplateDefault from "../../../src/templates/Default";
-import useToasty from "../../../src/contexts/Toasty";
+} from "../../../utils/formValuesPublish";
+import TemplateDefault from "../../../templates/Default";
+import useToasty from "../../../contexts/Toasty";
 import { makeStyles } from "@material-ui/core";
-import FileUpload from "../../../src/components/FileUpload";
+import FileUpload from "../../../components/FileUpload";
 import { getSession } from "next-auth/client";
 
 const useStyles = makeStyles((theme) => ({

@@ -17,16 +17,16 @@ import {
   CircularProgress,
 } from "@material-ui/core";
 
-import TemplateDefault from "../../../src/templates/Default";
+import TemplateDefault from '../../../templates/Default'
 import {
   initialValues,
   validationSchema,
-} from "../../../src/utils/formValuesSignin";
-import useToasty from "../../../src/contexts/Toasty";
+} from "../../../utils/formValuesSignin";
+import useToasty from "../../../contexts/Toasty";
 
 import { Alert } from "@material-ui/lab";
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   container: {
     padding: 30,
   },
