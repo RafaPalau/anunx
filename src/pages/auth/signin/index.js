@@ -1,6 +1,9 @@
+import Image from "next/image";
 import { Formik } from "formik";
 import axios from "axios";
 import { useRouter } from "next/router";
+import { signIn, useSession } from "next-auth/client";
+import { makeStyles } from "@material-ui/core";
 
 import {
   Box,
@@ -14,27 +17,70 @@ import {
   CircularProgress,
 } from "@material-ui/core";
 
-import TemplateDefault from "../../../src/templates/Default";
-import { initialValues, validationSchema } from "./formValues";
-import useToasty from "../../../src/contexts/Toasty";
-import useStyles from "./styles";
+import TemplateDefault from '../../../templates/Default'
+import {
+  initialValues,
+  validationSchema,
+} from "../../../utils/formValuesSignin";
+import useToasty from "../../../contexts/Toasty";
 
-const Signup = () => {
+import { Alert } from "@material-ui/lab";
+
+const useStyles = makeStyles((theme) => ({
+  container: {
+    padding: 30,
+  },
+  box: {
+    backgroundColor: theme.palette.background.white,
+    padding: theme.spacing(3),
+  },
+  formControl: {
+    marginBottom: theme.spacing(1),
+  },
+  submit: {
+    margin: theme.spacing(3, 0, 2),
+  },
+  loading: {
+    display: "block",
+    margin: "10px auto",
+  },
+  errorMessage: {
+    margin: "20px 0",
+  },
+  orSeparator: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#e8e8e8",
+    width: "100%",
+    height: 1,
+    margin: theme.spacing(7, 0, 4),
+
+    "& span": {
+      backgroundColor: "white",
+      padding: "0 30px",
+    },
+  },
+}));
+
+const Signin = ({ APP_URL }) => {
   const classes = useStyles();
   const router = useRouter();
   const { setToasty } = useToasty();
+  const [session] = useSession();
 
-  const handleFormSubmit = async (values) => {
-    const response = await axios.post("/api/users", values);
+  const handleGoogleLogin = () => {
+    signIn("google", {
+      callbackUrl: `${APP_URL}/user/dashboard`,
+    });
+  };
 
-    if (response.data.success) {
-      setToasty({
-        open: true,
-        severity: "success",
-        text: "Cadastro realizado com sucesso!",
-      });
-      router.push("/auth/signin");
-    }
+  const handleFormSubmit = (values) => {
+    signIn("credentials", {
+      email: values.email,
+      password: values.password,
+      callbackUrl: `${APP_URL}/user/dashboard`,
+    });
   };
 
   return (
@@ -46,20 +92,34 @@ const Signup = () => {
           align="center"
           color="textPrimary"
         >
-          Crie sua conta
-        </Typography>
-        <Typography
-          component="h5"
-          variant="h5"
-          align="center"
-          color="textPrimary"
-        >
-          E anuncie para todo o Brasil
+          Entre na sua conta
         </Typography>
       </Container>
 
       <Container>
         <Box className={classes.box}>
+          <Box display="flex" justifyContent="center">
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={
+                <Image
+                  src="/images/logo_google.png"
+                  width={20}
+                  height={20}
+                  alt="Login com Google"
+                />
+              }
+              onClick={handleGoogleLogin}
+            >
+              Entrar com Google
+            </Button>
+          </Box>
+
+          <Box className={classes.orSeparator}>
+            <span>ou</span>
+          </Box>
+
           <Formik
             initialValues={initialValues}
             validationSchema={validationSchema}
@@ -75,21 +135,11 @@ const Signup = () => {
             }) => {
               return (
                 <form onSubmit={handleSubmit}>
-                  <FormControl
-                    fullWidth
-                    error={errors.name && touched.name}
-                    className={classes.formControl}
-                  >
-                    <InputLabel>Name</InputLabel>
-                    <Input
-                      name="name"
-                      value={values.name}
-                      onChange={handleChange}
-                    />
-                    <FormHelperText>
-                      {errors.name && touched.name ? errors.name : null}
-                    </FormHelperText>
-                  </FormControl>
+                  {router.query.i === "1" ? (
+                    <Alert severity="error" className={classes.errorMessage}>
+                      Usuário ou senha inválidos
+                    </Alert>
+                  ) : null}
 
                   <FormControl
                     fullWidth
@@ -127,25 +177,6 @@ const Signup = () => {
                     </FormHelperText>
                   </FormControl>
 
-                  <FormControl
-                    fullWidth
-                    error={errors.passwordConf && touched.passwordConf}
-                    className={classes.formControl}
-                  >
-                    <InputLabel>Confimação de senha</InputLabel>
-                    <Input
-                      name="passwordConf"
-                      type="password"
-                      value={values.passwordConf}
-                      onChange={handleChange}
-                    />
-                    <FormHelperText>
-                      {errors.passwordConf && touched.passwordConf
-                        ? errors.passwordConf
-                        : null}
-                    </FormHelperText>
-                  </FormControl>
-
                   {isSubmitting ? (
                     <CircularProgress className={classes.loading} />
                   ) : (
@@ -156,7 +187,7 @@ const Signup = () => {
                       color="primary"
                       className={classes.submit}
                     >
-                      Cadastrar
+                      Entrar
                     </Button>
                   )}
                 </form>
@@ -169,4 +200,10 @@ const Signup = () => {
   );
 };
 
-export default Signup;
+Signin.getInitialProps = async function () {
+  return {
+    APP_URL: process.env.APP_URL,
+  };
+};
+
+export default Signin;

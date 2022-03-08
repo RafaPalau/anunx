@@ -1,3 +1,5 @@
+import { useState } from "react";
+import axios from "axios";
 import {
   Button,
   CardActions,
@@ -15,15 +17,13 @@ import {
 import { makeStyles } from "@material-ui/core";
 import { useSession, getSession } from "next-auth/client";
 import Link from "next/link";
-import dbConnect from "../../src/utils/dbConnect";
+import dbConnect from "../../utils/dbConnect";
 
-import ProductsModel from "../../src/models/products";
-import TemplateDefault from "../../src/templates/Default";
-import Card from "../../src/components/Card";
-import { formatCurrency } from "../../src/utils/currency";
-import { useState } from "react";
-import axios from "axios";
-import useToasty from "../../src/contexts/Toasty";
+import ProductsModel from "../../models/products";
+import TemplateDefault from "../../templates/Default";
+import Card from "../../components/Card";
+import { formatCurrency } from "../../utils/currency";
+import useToasty from "../../contexts/Toasty";
 
 const useStyles = makeStyles((theme) => ({
   buttonAdd: {

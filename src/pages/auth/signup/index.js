@@ -1,8 +1,7 @@
-import Image from "next/image";
 import { Formik } from "formik";
 import axios from "axios";
 import { useRouter } from "next/router";
-import { signIn, useSession } from "next-auth/client";
+import { makeStyles } from "@material-ui/core";
 
 import {
   Box,
@@ -16,30 +15,49 @@ import {
   CircularProgress,
 } from "@material-ui/core";
 
-import TemplateDefault from "../../../src/templates/Default";
-import { initialValues, validationSchema } from "./formValues";
-import useToasty from "../../../src/contexts/Toasty";
-import useStyles from "./styles";
-import { Alert } from "@material-ui/lab";
+import TemplateDefault from '../../../templates/Default'
+import {
+  initialValues,
+  validationSchema,
+} from "../../../utils/formValuesSignup";
+import useToasty from "../../../contexts/Toasty";
 
-const Signin = ({ APP_URL }) => {
+const useStyles = makeStyles((theme) => ({
+  container: {
+    padding: 30,
+  },
+  box: {
+    backgroundColor: theme.palette.background.white,
+    padding: theme.spacing(3),
+  },
+  formControl: {
+    marginBottom: theme.spacing(1),
+  },
+  submit: {
+    margin: theme.spacing(3, 0, 2),
+  },
+  loading: {
+    display: "block",
+    margin: "10px auto",
+  },
+}));
+
+const Signup = () => {
   const classes = useStyles();
   const router = useRouter();
   const { setToasty } = useToasty();
-  const [session] = useSession();
 
-  const handleGoogleLogin = () => {
-    signIn("google", {
-      callbackUrl: `${APP_URL}/user/dashboard`,
-    });
-  };
+  const handleFormSubmit = async (values) => {
+    const response = await axios.post("/api/users", values);
 
-  const handleFormSubmit = (values) => {
-    signIn("credentials", {
-      email: values.email,
-      password: values.password,
-      callbackUrl: `${APP_URL}/user/dashboard`,
-    });
+    if (response.data.success) {
+      setToasty({
+        open: true,
+        severity: "success",
+        text: "Cadastro realizado com sucesso!",
+      });
+      router.push("/auth/signin");
+    }
   };
 
   return (
@@ -51,34 +69,20 @@ const Signin = ({ APP_URL }) => {
           align="center"
           color="textPrimary"
         >
-          Entre na sua conta
+          Crie sua conta
+        </Typography>
+        <Typography
+          component="h5"
+          variant="h5"
+          align="center"
+          color="textPrimary"
+        >
+          E anuncie para todo o Brasil
         </Typography>
       </Container>
 
       <Container>
         <Box className={classes.box}>
-          <Box display="flex" justifyContent="center">
-            <Button
-              variant="contained"
-              color="primary"
-              startIcon={
-                <Image
-                  src="/images/logo_google.png"
-                  width={20}
-                  height={20}
-                  alt="Login com Google"
-                />
-              }
-              onClick={handleGoogleLogin}
-            >
-              Entrar com Google
-            </Button>
-          </Box>
-
-          <Box className={classes.orSeparator}>
-            <span>ou</span>
-          </Box>
-
           <Formik
             initialValues={initialValues}
             validationSchema={validationSchema}
@@ -94,11 +98,21 @@ const Signin = ({ APP_URL }) => {
             }) => {
               return (
                 <form onSubmit={handleSubmit}>
-                  {router.query.i === "1" ? (
-                    <Alert severity="error" className={classes.errorMessage}>
-                      Usuário ou senha inválidos
-                    </Alert>
-                  ) : null}
+                  <FormControl
+                    fullWidth
+                    error={errors.name && touched.name}
+                    className={classes.formControl}
+                  >
+                    <InputLabel>Name</InputLabel>
+                    <Input
+                      name="name"
+                      value={values.name}
+                      onChange={handleChange}
+                    />
+                    <FormHelperText>
+                      {errors.name && touched.name ? errors.name : null}
+                    </FormHelperText>
+                  </FormControl>
 
                   <FormControl
                     fullWidth
@@ -136,6 +150,25 @@ const Signin = ({ APP_URL }) => {
                     </FormHelperText>
                   </FormControl>
 
+                  <FormControl
+                    fullWidth
+                    error={errors.passwordConf && touched.passwordConf}
+                    className={classes.formControl}
+                  >
+                    <InputLabel>Confimação de senha</InputLabel>
+                    <Input
+                      name="passwordConf"
+                      type="password"
+                      value={values.passwordConf}
+                      onChange={handleChange}
+                    />
+                    <FormHelperText>
+                      {errors.passwordConf && touched.passwordConf
+                        ? errors.passwordConf
+                        : null}
+                    </FormHelperText>
+                  </FormControl>
+
                   {isSubmitting ? (
                     <CircularProgress className={classes.loading} />
                   ) : (
@@ -146,7 +179,7 @@ const Signin = ({ APP_URL }) => {
                       color="primary"
                       className={classes.submit}
                     >
-                      Entrar
+                      Cadastrar
                     </Button>
                   )}
                 </form>
@@ -159,10 +192,4 @@ const Signin = ({ APP_URL }) => {
   );
 };
 
-Signin.getServerSideProps = async function () {
-  return {
-    APP_URL: process.env.APP_URL,
-  };
-};
-
-export default Signin;
+export default Signup;
