@@ -13,10 +13,10 @@ import {
 import { makeStyles } from "@material-ui/core/styles";
 import Carousel from "react-material-ui-carousel";
 
-import TemplateDefault from "../../../src/templates/Default";
-import ProductsModel from "../../../src/models/products";
-import dbConnect from "../../../src/utils/dbConnect";
-import { formatCurrency } from "../../../src/utils/currency";
+import TemplateDefault from "../../../templates/Default";
+import ProductsModel from "../../../models/products";
+import dbConnect from "../../../utils/dbConnect";
+import { formatCurrency } from "../../../utils/currency";
 
 const useStyles = makeStyles((theme) => ({
   box: {

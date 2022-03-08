@@ -9,12 +9,12 @@ import {
 } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
 import { makeStyles } from "@material-ui/core/styles";
-import TemplateDefault from "../../src/templates/Default";
-import Card from "../../src/components/Card";
+import TemplateDefault from "../../templates/Default";
+import Card from "../../components/Card";
 import Link from "next/link";
 import slugify from "slugify";
-import { formatCurrency } from "../../src/utils/currency";
-import ProductsModel from "../../src/models/products";
+import { formatCurrency } from "../../utils/currency";
+import ProductsModel from "../../models/products";
 
 const useStyles = makeStyles((theme) => ({
   box: {
